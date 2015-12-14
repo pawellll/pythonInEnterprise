@@ -49,7 +49,7 @@ class Solver(object):
             for x in range(1, self.size + 1):
                 self.sudoku_grid[r][c] = x
                 if self._validate_row(r, c) and self._validate_column(r, c) and self._validate_box(r, c):
-                    if (self._backtrack(r, c)):
+                    if self._backtrack(r, c):
                         return True
             self.sudoku_grid[r][c] = 0
             return False
@@ -65,7 +65,7 @@ class Solver(object):
 
     def print_grid(self):
         for row in self.sudoku_grid:
-            print(row)
+            print row
 
 
 
