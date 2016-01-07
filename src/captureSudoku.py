@@ -5,7 +5,7 @@ import numpy as np
 def cameraCapture():
 
     # take photo
-    camera_port = 0
+    camera_port = 0  # 0 is for default camera
     camera = cv2.VideoCapture(camera_port)
 
 
@@ -198,7 +198,6 @@ def trainingDigits():
                     responses.append(int(chr(key)))
                     sample = roismall.reshape((1,100))
                     samples = np.append(samples,sample,0)
-             
 
     responses = np.array(responses,np.float32)
     responses = responses.reshape((responses.size,1))
@@ -252,5 +251,4 @@ if __name__ == '__main__':
     cameraCapture() 
     segmentation()
 
-    # trainingDigits()
     testingDigits()
