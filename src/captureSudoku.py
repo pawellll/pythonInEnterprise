@@ -67,7 +67,7 @@ def segmentation():
     cv2.imwrite("../resources/opencv-2.png", res)
 
     # vertical lines
-    kernelx = cv2.getStructuringElement(cv2.MORPH_RECT,(2,10))
+    kernelx = cv2.getStructuringElement(cv2.MORPH_RECT, (2,10))
 
     dx = cv2.Sobel(res,cv2.CV_16S,1,0)
     dx = cv2.convertScaleAbs(dx)

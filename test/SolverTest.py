@@ -3,7 +3,7 @@ from src.Solver import Solver
 
 
 class SolverTest(unittest.TestCase):
-    def test_solve(self):
+    def test_if_solve_valid_sudoku(self):
         grid = [
             [5, 3, 0, 0, 7, 0, 0, 0, 0],
             [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -18,7 +18,7 @@ class SolverTest(unittest.TestCase):
         sudoku = Solver(grid)
         self.assertTrue(sudoku.solve())
 
-    def test_invalid_sudoku(self):
+    def test_if_solve_invalid_sudoku(self):
         grid = [
             [5, 3, 0, 0, 7, 0, 0, 1, 1],
             [6, 0, 0, 1, 9, 5, 0, 0, 0],
