@@ -34,7 +34,7 @@ def segmentation():
     # black & white
     img = cv2.imread('../resources/srcImage.jpg')
     img = cv2.GaussianBlur(img,(5,5),0)
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     mask = np.zeros((gray.shape),np.uint8)
     kernel1 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(11,11))
 

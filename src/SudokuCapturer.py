@@ -1,6 +1,7 @@
 import cv2
 import logging
 import numpy as np
+from SudokuDetector import SudokuDetector
 
 WINDOW_NAME = "picture_window"
 
@@ -16,6 +17,7 @@ class SudokuCapturer:
         camera_port = 0  # 0 is for default camera
         self._camera_capturer = cv2.VideoCapture(camera_port)
         cv2.namedWindow(WINDOW_NAME)  # create window for displaying
+        self._dectector = SudokuDetector()
         logging.info("Camera opened")
 
     def __del__(self):
@@ -34,12 +36,13 @@ class SudokuCapturer:
             _, image = self._camera_capturer.read()
             cv2.imshow(WINDOW_NAME, image)
             cv2.waitKey(1)  # used to slow down
-            # TODO:
-            # if isSudokuOnImage
-            # return image
-            # else
-            # return None
-            return None
+
+            is_detected, sudoku_list = self._dectector.detect_sudoku(image)
+
+            if is_detected:
+                return sudoku_list
+            else:
+                return None
         else:
             # TODO:handle error
             logging.debug("Couldn't open camera")
