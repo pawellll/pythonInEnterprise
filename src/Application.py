@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from SudokuCapturer import SudokuCapturer
 
 LOGGING_PATH = "solver.log"
@@ -13,13 +14,12 @@ class Application:
         self._sudoku_capturer = SudokuCapturer()
 
     def run(self):
+        logging.info("Stat appliction")
         while True:
-            if self._sudoku_capturer.capture_sudoku():
-                # solve
-                pass
+            if self._sudoku_capturer.capture_sudoku() is None:
+                time.sleep(1)  # to slow down photo capturing
             else:
-                # capture again
-                pass
+                break
 
     @staticmethod
     def _setup_logging(log_path, logging_level, logging_format):

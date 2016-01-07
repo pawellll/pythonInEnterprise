@@ -129,7 +129,7 @@ def segmentation():
     # sorting them
 
     if len(centroids) != 100:
-      print("You've got an ugly picture! Try again")
+      print "You've got an ugly picture! Try again"
 
     centroids = np.array(centroids,dtype = np.float32)
     c = centroids.reshape((len(centroids),2))
@@ -250,5 +250,4 @@ def testingDigits():
 if __name__ == '__main__':
     cameraCapture() 
     segmentation()
-
     testingDigits()
