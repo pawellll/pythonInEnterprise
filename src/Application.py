@@ -18,7 +18,9 @@ class Application:
             if self._sudoku_capturer.capture_sudoku() is None:
                 pass
             else:
-                break
+                pass
+                # send image with sudoku to server and wait for response
+                # break
 
     @staticmethod
     def _setup_logging(log_path, logging_level, logging_format):
