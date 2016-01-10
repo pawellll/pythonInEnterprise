@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 
 WINDOW_NAME = "picture_window"
+RED_COLOR = (0, 0, 255)
+DETECTION_LINE_THICKNESS = 3
 
 
 class SudokuDetector:
@@ -18,20 +20,19 @@ class SudokuDetector:
     def detect_sudoku(self, image):
         """
             Detects sudoku on image
-            Returns tuple (is_detected and sudoku_list)
+            Returns sudoku rectangle
         """
-        cv2.namedWindow(WINDOW_NAME)  # create window for displaying
+        cv2.namedWindow(WINDOW_NAME)  # create window for displaying image
         self._original_image = image
         self._preprocess()
-        # self._perspective()
-        # self._warp()
+
         if self._find_biggest_square() is not None:
             return self._biggest, self._thresh
         else:
             return None
 
     def _preprocess(self):
-        """performs prerprocessing on image"""
+        """performs preprocessing on image"""
         # rescale image
         self._resized = self._original_image  # cv2.resize(self._original_image, (600, 600))  # rescaling not needed?
         # gray scale conversion
@@ -49,7 +50,7 @@ class SudokuDetector:
         self.maxArea = 0
         for i in self._contours:
             area = cv2.contourArea(i)
-            if area > 50000:
+            if area > 50000:  # 50000 is an estimated value for the kind of blob we want to evaluate
                 peri = cv2.arcLength(i, True)
                 approx = cv2.approxPolyDP(i, 0.02 * peri, True)
                 if area > self.maxArea and len(approx) == 4:
@@ -57,23 +58,21 @@ class SudokuDetector:
                     self.maxArea = area
                     # best_cont = i # not used warning
         if self.maxArea > 0:
-            cv2.polylines(self._original_image, [self._biggest], True, (0, 0, 255), 3)
+            is_closed = True
+            cv2.polylines(self._original_image, [self._biggest], is_closed, RED_COLOR, DETECTION_LINE_THICKNESS)
             cv2.imshow(WINDOW_NAME, self._original_image)
-            cv2.imwrite('hehe.jpg', self._original_image)
             self._reorder()  # put vertices in order
             return self._biggest
         else:
             cv2.imshow(WINDOW_NAME, self._original_image)
             return None
 
-        # cv2.imwrite('img/capturer.jpg', self.captured)
-
     def _reorder(self):
         """
          puts vertices in order
         """
         # [top-left, top-right, bottom-right, bottom-left]
-        a = self._biggest.reshape((4,2))
+        a = self._biggest.reshape((4, 2))
         b = np.zeros((4,2), dtype=np.float32)
 
         add = a.sum(1)

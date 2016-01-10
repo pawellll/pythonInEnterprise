@@ -1,5 +1,6 @@
 import unittest
-from src.Solver import Solver
+
+from client.src.Solver import Solver
 
 
 class SolverTest(unittest.TestCase):
