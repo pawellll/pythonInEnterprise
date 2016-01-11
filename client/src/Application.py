@@ -1,6 +1,7 @@
 import logging
 import os
 from SudokuCapturer import SudokuCapturer
+from Solver import Solver
 
 LOGGING_PATH = "solver.log"
 LOGGING_FORMAT = "%(asctime)s %(levelname)s %(message)s "
@@ -20,7 +21,13 @@ class Application:
             else:
                 pass
                 # send image with sudoku to server and wait for response
-                # break
+
+                read_grid = None
+
+                if Solver(read_grid).solve():
+                    message = "Sudoku completed"
+                else:
+                    message = "Uabled to solve sudoku"
 
     @staticmethod
     def _setup_logging(log_path, logging_level, logging_format):
