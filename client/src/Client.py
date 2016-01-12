@@ -1,5 +1,6 @@
 import socket
 import sys
+import time
 
 ''' 
     Logika klienta:
@@ -15,23 +16,25 @@ class Client:
         self._data_size = datasize
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_address = (addr, port)
-        print >>sys.stderr, 'polaczenie z %s na porcie %s' % self.server_address
+        print >>sys.stderr, 'Connecting to %s:%s' % self.server_address
         self.sock.connect(self.server_address)
         self.sock.settimeout(10.0)
         try:
             filepath = '../resources/good2.jpg'
-            img = open(filepath,'r')
+            img = open(filepath,'r+b')
             while True:
-                strng = img.readline(512)
+                strng = img.readline(self._data_size)
                 if not strng:
                     break
-                self.sock.send(strng)
+                self.sock.send(str(strng))
             img.close()
-
-            print('Otrzymano z servera odpowiedz: ')
-            print( self.sock.recv(16))
+            time.sleep(2)
+            self.sock.send('EOF')
+            print('Waiting for response: ')
+            _result = self.sock.recv(self._data_size)
+            print(_result)
 
 
         finally:
-            print >>sys.stderr, 'zamykam gniazdo'
+            print >>sys.stderr, 'Closing socket'
             self.sock.close()

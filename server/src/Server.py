@@ -3,7 +3,7 @@ import sys
 '''
  Logika servera: dostaje zdjecie, zapisuje je tymczasowo do pliku imageToProcess.jpg
  potem trzeba je przeprocesowac przez te wszystkie parsery sovery itd, a nastepnie zwrocic
- to co zwracaja te rzeczy
+ to co zwracaja te rzeczy (zedytowac metode ProcessImage)
 '''
 
 class Server:
@@ -11,38 +11,36 @@ class Server:
         self._data_size = int(datasize)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (addr, int(port))
-        print >>sys.stderr, 'startuje server %s na porcie %s' % server_address
+        print >>sys.stderr, 'Starting server at %s:%s' % server_address
         self.sock.bind(server_address)
 
 
     def listen(self):
         self.sock.listen(5)
         while True:
-            print >>sys.stderr, 'czekam na polaczenie od klienta'
+            print >>sys.stderr, 'Waiting for connection ... '
             connection, client_address = self.sock.accept()
             try:
-            	n = 0
-                print >>sys.stderr, 'polaczenie z: ', client_address
+                print >>sys.stderr, 'Connection from ', client_address
                 fname = 'imageToProcess.jpg'
-                fp = open(fname,'w+')
+                fp = open(fname,'wb+')
                 while True:
                     data = connection.recv(self._data_size)
-                    n =  n + 1
-                    print(str(n) + ': data')
-                    if data is None:
-                    	print('not data')
-                    	fp.close()
-                        solved_sudoku = self.ProcessImage(fname)
-                        connection.send('msg: ' + solved_sudoku)
+                    data = str(data)
+                    if data == 'EOF':
+                        fp.close()
                         break
-                    fp.write(data)
-                fp.close()
+                    else:
+                        fp.write(data)
 
-
-                print('P')
-            finally:
+                solved_sudoku = self.ProcessImage(fname)
+                print('Processed image and received result: ' + solved_sudoku)
+                connection.send('msg: ' + solved_sudoku)
                 connection.close()
+            finally:
+                print('Closed via server')
+
                 
     def ProcessImage(self,imageName):
-    	print('Procesuje sudoku: ' + imageName)
-    	return 'Przeprocesowano'
+        print('Procesuje sudoku: ' + imageName)
+        return 'Przeprocesowano'
