@@ -35,6 +35,8 @@ class Application:
                 # ############################################
                 solved_grid = self._solve_sudoku(read_grid)
                 if solved_grid is not None:
+                    # argumenty: tablica numpy, lista
+                    #image.virtualImage(reader.original, solvedGrid)
                     SudokuGui.run(reader.original.tolist(), solvedGrid, "Succesfully solved sudoku")
                     break
 
