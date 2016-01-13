@@ -1,9 +1,7 @@
 import logging
 import os
 import SudokuGui
-import ocr
-import sudokuOcr
-from ImageClass import ImageClass
+import SudokuOcr
 from SudokuCapturer import SudokuCapturer
 from Solver import Solver
 
@@ -27,13 +25,12 @@ class Application:
                 logging.info("Found sudoku on image")
                 # ############################################
                 # ################ TODO:send image with sudoku to server and wait for response
-                reader = sudokuOcr.OCRmodelClass()
-                read_grid = reader.OCR(image).tolist()
+                reader = SudokuOcr.OCRmodelClass()
+                read_grid = reader.orc(image).tolist()
                 solved_grid = self._solve_sudoku(read_grid)
                 # ################
                 # ############################################
                 if solved_grid is not None:
-                    image.virtualImage(reader.original, solved_grid)
                     SudokuGui.run(reader.original.tolist(), solved_grid, "Succesfully solved sudoku")
                     break
 

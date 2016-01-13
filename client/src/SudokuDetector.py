@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from ImageClass import ImageClass
+
 WINDOW_NAME = "picture_window"
 RED_COLOR = (0, 0, 255)
 DETECTION_LINE_THICKNESS = 3
@@ -56,7 +57,8 @@ class SudokuDetector:
         # gray scale conversion
         self._gray = cv2.cvtColor(self._resized, cv2.COLOR_BGR2GRAY)
         # Gaussian blur
-        self._gray = cv2.GaussianBlur(self._gray, (5, 5), 0)
+        kernel_size = (5, 5)
+        self._gray = cv2.GaussianBlur(self._gray, kernel_size, 0)
         # thresholding
         self._thresh = cv2.adaptiveThreshold(self._gray, 255, 1, 1, 11, 2)
         #  contours finding
@@ -86,9 +88,8 @@ class SudokuDetector:
             return None
 
     def _reorder(self):
-        """
-         puts vertices in order
-        """
+        """puts vertices in order"""
+
         # [top-left, top-right, bottom-right, bottom-left]
         a = self._biggest.reshape((4, 2))
         b = np.zeros((4, 2), dtype=np.float32)
@@ -103,9 +104,7 @@ class SudokuDetector:
         self._biggest = b
 
     def _perspective(self):
-        # stworz siatke 100 punktow uzywajac algorytmu
-        # topLeft-topRight-bottomRight-bottomLeft = "biggest"
-        b = np.zeros((100, 2), dtype=np.float32)
+        """change image to proper perspective"""
         c_sqrt = 10
         if self._biggest is None:
             self._biggest = [[0, 0], [640, 0], [640, 480], [0, 480]]
@@ -122,11 +121,10 @@ class SudokuDetector:
         self.reshape = self.mat.reshape((c_sqrt, c_sqrt, 2))
 
     def _warp(self):
-        # wyrownywanie obraz
-        mask = np.zeros(self._gray.shape, np.uint8)
+        """image equalising"""
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
         close = cv2.morphologyEx(self._gray, cv2.MORPH_CLOSE, kernel)
-        division = np.float32(self._gray) / (close)
+        division = np.float32(self._gray) / close
         result = np.uint8(cv2.normalize(division, division, 0, 255, cv2.NORM_MINMAX))
         result = cv2.cvtColor(result, cv2.COLOR_GRAY2BGR)
         output = np.zeros((450, 450, 3), np.uint8)
@@ -142,18 +140,8 @@ class SudokuDetector:
                                  [(ci + 1) * 450 / (c_sqrt - 1), (ri + 1) * 450 / (c_sqrt - 1)]], np.float32)
                 trans = cv2.getPerspectiveTransform(source, dest)
                 warp = cv2.warpPerspective(result, trans, (450, 450))
-                output[ri * 450 / (c_sqrt - 1):(ri + 1) * 450 / (c_sqrt - 1), ci * 450 / (c_sqrt - 1):(ci + 1) * 450 /
-                                                                                                      (
-                                                                                                          c_sqrt - 1)] = warp[
-                                                                                                                         ri * 450 / (
-                                                                                                                             c_sqrt - 1):(
-                                                                                                                                             ri + 1) * 450 / (
-                                                                                                                                             c_sqrt - 1),
-                                                                                                                         ci * 450 / (
-                                                                                                                             c_sqrt - 1):(
-                                                                                                                                             ci + 1) * 450 / (
-                                                                                                                                             c_sqrt - 1)].copy()
-        output_backup = np.copy(output)
-        # cv2.imshow('output',output)
-        key = cv2.waitKey(1)
+                output[ri * 450 / (c_sqrt - 1):(ri + 1) * 450 / (c_sqrt - 1),
+                ci * 450 / (c_sqrt - 1):(ci + 1) * 450 / (c_sqrt - 1)] = warp[ri * 450 / (c_sqrt - 1):(ri + 1) * 450 / (
+                c_sqrt - 1), ci * 450 / (c_sqrt - 1):(ci + 1) * 450 / (c_sqrt - 1)].copy()
+
         self._output = output

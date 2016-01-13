@@ -1,72 +1,54 @@
-import argparse
-
 from Tkinter import *
-import Image, ImageTk
-
-
-
-class SudokuError(Exception):
-    """
-    An application specific error.
-    """
-    pass
-
 
 
 class SudokuUI(Frame):
-
-    def __init__(self, parent, readGrid, solvedGrid, message):
+    def __init__(self, parent, read_grid, solved_grid, message):
         Frame.__init__(self, parent)
         self.parent = parent
-        self.readGrid = readGrid
-        self.solvedGrid = solvedGrid
+        self.readGrid = read_grid
+        self.solvedGrid = solved_grid
         self.message = message
         self.row, self.col = -1, -1
         self.MARGIN = 60  # Pixels around the board
         self.SIDE = 60  # Width of every board cell.
-        self.WIDTH  = self.HEIGHT = self.MARGIN * 2 + self.SIDE * 9
+        self.WIDTH = self.HEIGHT = self.MARGIN * 2 + self.SIDE * 9
 
         self.view = True
-        self.__initUI()
-	
+        self._init_ui()
+
     def callback(self):
         self.view = False
 
-    def __initUI(self):
-	
+    def _init_ui(self):
         self.parent.title("Sudoku")
-        self.__setMenu()
+        self._set_menu()
         self.pack(fill=BOTH)
         self.canvas = Canvas(self,
                              width=self.WIDTH,
                              height=self.HEIGHT)
         self.canvas.pack(fill=BOTH, side=TOP)
-        
-        self.img = ImageTk.PhotoImage(Image.open("virtual.jpg"))
+
         b = Button(self, text="Przelacz widok", command=self.callback)
         b.pack()
-        try:
-            if self.view:
-                #self.canvas.create_image(350,350, image=self.img)
-                self.__draw_puzzle()
-                self.__draw_grid()
-        except:
-            pass
-        self.__draw_message()
 
-    def __quitFunction(self):
+        if self.view:
+            self._draw_puzzle()
+            self._draw_grid()
+
+        self._draw_message()
+
+    def _quit_function(self):
         self.parent.destroy()
 
-    def __setMenu(self):
+    def _set_menu(self):
         menubar = Menu(self.parent)
-        fileMenu = Menu(menubar, tearoff=0)
-        fileMenu.add_command(label="Exit", command=self.__quitFunction)
+        file_menu = Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Exit", command=self._quit_function)
 
-        menubar.add_cascade(label = "File", menu=fileMenu)
-        self.parent.config(menu = menubar)
-    
-   
-    def __draw_grid(self):
+        menubar.add_cascade(label="File", menu=file_menu)
+        self.parent.config(menu=menubar)
+
+    def _draw_grid(self):
         """
         Draws grid divided with blue lines into 3x3 squares
         """
@@ -85,28 +67,27 @@ class SudokuUI(Frame):
             y1 = self.MARGIN + i * self.SIDE
             self.canvas.create_line(x0, y0, x1, y1, fill=color)
 
-    def __draw_puzzle(self):
+    def _draw_puzzle(self):
         self.canvas.delete("numbers")
 
         for i in xrange(9):
             for j in xrange(9):
-		if (self.readGrid[i][j] == self.solvedGrid[i][j]):
-			textColor = 'green'
-		else:
-			textColor = 'red'
+                if self.readGrid[i][j] == self.solvedGrid[i][j]:
+                    text_color = 'green'
+                else:
+                    text_color = 'red'
                 answer = self.solvedGrid[i][j]
                 if answer != 0:
                     x = self.MARGIN + j * self.SIDE + self.SIDE / 2
                     y = self.MARGIN + i * self.SIDE + self.SIDE / 2
 
                     self.canvas.create_text(
-                        x, y, text=answer, tags="numbers", fill=textColor,
-			font=("Arial", 18)
+                        x, y, text=answer, tags="numbers", fill=text_color,
+                        font=("Arial", 18)
                     )
 
-
-    def __draw_message(self):
-        x = self.WIDTH /2
+    def _draw_message(self):
+        x = self.WIDTH / 2
         y = 20
         self.canvas.create_text(
             x, y,
@@ -115,11 +96,8 @@ class SudokuUI(Frame):
         )
 
 
-
-
-
-def run(readGrid, solvedGrid, message):
+def run(read_grid, solved_grid, message):
     root = Tk()
-    sudokuUi = SudokuUI(root, readGrid, solvedGrid, message)
-    root.geometry("%dx%d" % (sudokuUi.WIDTH,sudokuUi.HEIGHT))
+    sudoku_ui = SudokuUI(root, read_grid, solved_grid, message)
+    root.geometry("%dx%d" % (sudoku_ui.WIDTH, sudoku_ui.HEIGHT))
     root.mainloop()

@@ -18,10 +18,11 @@ class OCRmodelClass:
 
         # odkomentowac w przypadku uzycia virtualImage
         self.original = np.zeros((9, 9), np.uint8)
-
         self.current = None
+        self.success = None
+        self.errors = None
 
-    def OCR(self, image):
+    def orc(self, image):
         gray = cv2.cvtColor(image.output, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (5, 5), 0)
         image.outputGray = gray
@@ -30,10 +31,9 @@ class OCRmodelClass:
         self.errors = [0, 0, 0, 0]
         for self.lvl in self.iterations:
             image.output = np.copy(image.outputBackup)
-            self.OCR_read(image)
+            self.ocr_read(image)
 
         best = 9
-        # ibest=-1
         for i in range(4):
             if self.success[i] > best and self.errors[i] >= 0:
                 best = self.success[i]
@@ -43,11 +43,11 @@ class OCRmodelClass:
         print (ibest)
         image.output = np.copy(image.outputBackup)
         self.lvl = self.iterations[ibest]
-        self.OCR_read(image)
+        self.ocr_read(image)
         self.original = self.current
         return self.current
 
-    def OCR_read(self, image):
+    def ocr_read(self, image):
         self.iter += 1
         print (self.iter)
         # perform actual OCR using kNearest model
@@ -68,7 +68,7 @@ class OCRmodelClass:
         for cnt in contours:
             if cv2.contourArea(cnt) > 20:
                 [x, y, w, h] = cv2.boundingRect(cnt)
-                if h > 20 and h < 40 and w > 8 and w < 40:
+                if 20 < h < 40 and 8 < w < 40:
                     if w < 20:
                         diff = 20 - w
                         x -= diff / 2
