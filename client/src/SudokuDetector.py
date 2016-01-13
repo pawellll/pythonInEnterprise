@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from ImageClass import ImageClass
 
 WINDOW_NAME = "picture_window"
 RED_COLOR = (0, 0, 255)
@@ -40,10 +39,7 @@ class SudokuDetector:
                 self._perspective()
                 self._warp()
                 self._i = 0
-                image_cls = ImageClass()
-                image_cls.output = self._output
-                image_cls.maxArea = self.maxArea
-                return image_cls
+                return self._output
             else:
                 self._i += 1
                 return None
