@@ -1,6 +1,6 @@
 import cv2
 import logging
-import numpy as np
+import sys
 from SudokuDetector import SudokuDetector
 
 
@@ -26,15 +26,14 @@ class SudokuCapturer:
         """
             takes photo from default camera of computer and checks if there's sudoku on it
             if no sudoku was found it returns None
-            if sudoku was found returns list of list where each inner list is row from up
+            if sudoku was found returns image of sudoku
         """
         if self._camera_capturer.isOpened():
             logging.info("Capturing photo")
             _, image = self._camera_capturer.read()
             cv2.waitKey(100)  # used to slow down
-
             return self._dectector.detect_sudoku(image)
         else:
-            # TODO:handle error
-            logging.debug("Couldn't open camera")
+            logging.info("Couldn't open camera")
+            sys.exit(0)
 

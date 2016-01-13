@@ -9,15 +9,18 @@ DETECTION_LINE_THICKNESS = 3
 class SudokuDetector:
     """
         Class for detecting sudoku on image
+        Variable i used to count found squares. We need to give user some time to put image in front of camera
+        Because of it we process 10th found square on image in order to avoid situation of detection just half of
+        sudoku while user is putting it in front of camera
     """
 
     def __init__(self):
         self._original_image = None
-        #  self._resized = None # rescaling not neeeded?
         self._gray = None
         self._thresh = None
         self._contours = None
-        self.mat = np.zeros((100,2),np.float32)
+        self.mat = np.zeros((100, 2), np.float32)
+        self._i = 0
 
     def detect_sudoku(self, image):
         """
@@ -29,13 +32,15 @@ class SudokuDetector:
         self._preprocess()
 
         if self._find_biggest_square() is not None:
-            # continue processing and return image
-            self._perspective()
-            self._warp()
-            return self._output
-            # cv2.imwrite('output.png', self._output)
-            # return None
-            return None
+            if self._i > 10:
+                # continue processing and return image of found sudoku
+                self._perspective()
+                self._warp()
+                self._i = 0
+                return self._output
+            else:
+                self._i += 1
+                return None
         else:
             return None
 
@@ -134,15 +139,15 @@ class SudokuDetector:
                 warp = cv2.warpPerspective(result, trans, (450, 450))
                 output[ri * 450 / (c_sqrt - 1):(ri + 1) * 450 / (c_sqrt - 1), ci * 450 / (c_sqrt - 1):(ci + 1) * 450 /
                                                                                                       (
-                                                                                                      c_sqrt - 1)] = warp[
-                                                                                                                     ri * 450 / (
-                                                                                                                     c_sqrt - 1):(
-                                                                                                                                 ri + 1) * 450 / (
-                                                                                                                                 c_sqrt - 1),
-                                                                                                                     ci * 450 / (
-                                                                                                                     c_sqrt - 1):(
-                                                                                                                                 ci + 1) * 450 / (
-                                                                                                                                 c_sqrt - 1)].copy()
+                                                                                                          c_sqrt - 1)] = warp[
+                                                                                                                         ri * 450 / (
+                                                                                                                             c_sqrt - 1):(
+                                                                                                                                             ri + 1) * 450 / (
+                                                                                                                                             c_sqrt - 1),
+                                                                                                                         ci * 450 / (
+                                                                                                                             c_sqrt - 1):(
+                                                                                                                                             ci + 1) * 450 / (
+                                                                                                                                             c_sqrt - 1)].copy()
         output_backup = np.copy(output)
         # cv2.imshow('output',output)
         key = cv2.waitKey(1)
