@@ -2,6 +2,7 @@ import logging
 import os
 import SudokuGui
 import ocr
+import sudokuOcr
 from ImageClass import ImageClass
 from SudokuCapturer import SudokuCapturer
 from Solver import Solver
@@ -23,18 +24,19 @@ class Application:
             if image is None:
                 logging.info("Sudoku hasn't been found on image. Continuing")
             else:
-                pass
-                # logging.info("Found sudoku on image")
+                logging.info("Found sudoku on image")
                 # ############################################
                 # ################ TODO:send image with sudoku to server and wait for response
-                # reader = ocr.OCRmodelClass()
-                # read_grid = reader.ocr(image).tolist()
+                image_cls = ImageClass()
+                image_cls.output = image
+                reader = sudokuOcr.OCRmodelClass()
+                read_grid = reader.OCR(image_cls).tolist()
                 # ################
                 # ############################################
-                # solved_grid = self._solve_sudoku(read_grid)
-                # if solved_grid is not None:
-                #     SudokuGui.run(solved_grid, "Succesfully solved sudoku")
-                #     break
+                solved_grid = self._solve_sudoku(read_grid)
+                if solved_grid is not None:
+                    SudokuGui.run(solved_grid, "Succesfully solved sudoku")
+                    break
 
     @staticmethod
     def _solve_sudoku(read_grid):

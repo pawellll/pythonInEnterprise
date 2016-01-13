@@ -34,7 +34,6 @@ class Client:
             _result = self.sock.recv(self._data_size)
             print(_result)
 
-
         finally:
             print >>sys.stderr, 'Closing socket'
             self.sock.close()

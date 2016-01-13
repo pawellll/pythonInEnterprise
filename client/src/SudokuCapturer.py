@@ -31,7 +31,7 @@ class SudokuCapturer:
         if self._camera_capturer.isOpened():
             logging.info("Capturing photo")
             _, image = self._camera_capturer.read()
-            cv2.waitKey(1)  # used to slow down
+            cv2.waitKey(100)  # used to slow down
 
             return self._dectector.detect_sudoku(image)
         else:

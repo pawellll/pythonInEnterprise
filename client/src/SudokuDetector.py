@@ -30,11 +30,11 @@ class SudokuDetector:
 
         if self._find_biggest_square() is not None:
             # continue processing and return image
-            # self._perspective()
-            # self._warp()
+            self._perspective()
+            self._warp()
+            return self._output
             # cv2.imwrite('output.png', self._output)
             # return None
-            # return self._output
             return None
         else:
             return None

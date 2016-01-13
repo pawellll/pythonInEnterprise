@@ -94,8 +94,8 @@ class ImageClass:
             j = k / c_sqrt
             ml = [tl[0] + (bl[0] - tl[0]) / 9 * j, tl[1] + (bl[1] - tl[1]) / 9 * j]
             mr = [tr[0] + (br[0] - tr[0]) / 9 * j, tr[1] + (br[1] - tr[1]) / 9 * j]
-            ##            self.mat[k,0] = ml[0]+(mr[0]-ml[0])/9*i
-            ##            self.mat[k,1] = ml[1]+(mr[1]-ml[1])/9*i
+            # self.mat[k,0] = ml[0]+(mr[0]-ml[0])/9*i
+            # self.mat[k,1] = ml[1]+(mr[1]-ml[1])/9*i
             self.mat.itemset((k, 0), ml[0] + (mr[0] - ml[0]) / 9 * i)
             self.mat.itemset((k, 1), ml[1] + (mr[1] - ml[1]) / 9 * i)
         self.reshape = self.mat.reshape((c_sqrt, c_sqrt, 2))
@@ -147,8 +147,8 @@ class ImageClass:
         w = int(20 * tsize)
         h = int(25 * tsize)
         for i in range(100):
-            ##            x = int(self.mat[i][0]+8*tsize)
-            ##            y = int(self.mat[i][1]+8*tsize)
+            # x = int(self.mat[i][0]+8*tsize)
+            # y = int(self.mat[i][1]+8*tsize)
             x = int(self.mat.item(i, 0) + 8 * tsize)
             y = int(self.mat.item(i, 1) + 8 * tsize)
             if i % 10 != 9 and i / 10 != 9:
