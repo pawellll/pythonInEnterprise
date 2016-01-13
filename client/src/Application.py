@@ -1,9 +1,9 @@
 import logging
 import os
 import SudokuGui
-import SudokuOcr
+import cv2
 from SudokuCapturer import SudokuCapturer
-from Solver import Solver
+from Client import Client
 
 LOGGING_PATH = "solver.log"
 LOGGING_FORMAT = "%(asctime)s %(levelname)s %(message)s "
@@ -14,6 +14,7 @@ class Application:
     def __init__(self):
         self._setup_logging(LOGGING_PATH, LOGGING_LEVEL, LOGGING_FORMAT)
         self._sudoku_capturer = SudokuCapturer()
+        self._client = None
 
     def run(self):
         logging.info("Stat appliction")
@@ -23,24 +24,14 @@ class Application:
                 logging.info("Sudoku hasn't been found on image. Continuing")
             else:
                 logging.info("Found sudoku on image")
-                # ############################################
-                # ################ TODO:send image with sudoku to server and wait for response
-                reader = SudokuOcr.OCRmodelClass()
-                read_grid = reader.orc(image).tolist()
-                solved_grid = self._solve_sudoku(read_grid)
-                # ################
-                # ############################################
-                if solved_grid is not None:
-                    SudokuGui.run(reader.original.tolist(), solved_grid, "Succesfully solved sudoku")
-                    break
+                cv2.imwrite("prepared.jpg", image)
 
-    @staticmethod
-    def _solve_sudoku(read_grid):
-        solver = Solver(read_grid)
-        if solver.solve():
-            return solver.sudoku_grid
-        else:
-            return None
+                self._client = Client()
+                read_grid, solved_grid = self._client.result
+
+                if solved_grid is not None:
+                    SudokuGui.run(read_grid, solved_grid, "Succesfully solved sudoku")
+                    break
 
     @staticmethod
     def _setup_logging(log_path, logging_level, logging_format):

@@ -1,29 +1,28 @@
 import socket
 import sys
-'''
- Logika servera: dostaje zdjecie, zapisuje je tymczasowo do pliku imageToProcess.jpg
- potem trzeba je przeprocesowac przez te wszystkie parsery sovery itd, a nastepnie zwrocic
- to co zwracaja te rzeczy (zedytowac metode ProcessImage)
-'''
+import SudokuOcr
+from Solver import Solver
+import cv2
+import pickle
+
 
 class Server:
-    def __init__(self, addr = 'localhost', port = 5004, datasize = 1024):
+    def __init__(self, addr='localhost', port=5008, datasize=1024):
         self._data_size = int(datasize)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (addr, int(port))
-        print >>sys.stderr, 'Starting server at %s:%s' % server_address
+        print >> sys.stderr, 'Starting server at %s:%s' % server_address
         self.sock.bind(server_address)
-
 
     def listen(self):
         self.sock.listen(5)
         while True:
-            print >>sys.stderr, 'Waiting for connection ... '
+            print >> sys.stderr, 'Waiting for connection ... '
             connection, client_address = self.sock.accept()
             try:
-                print >>sys.stderr, 'Connection from ', client_address
+                print >> sys.stderr, 'Connection from ', client_address
                 fname = 'imageToProcess.jpg'
-                fp = open(fname,'wb+')
+                fp = open(fname, 'wb+')
                 while True:
                     data = connection.recv(self._data_size)
                     data = str(data)
@@ -32,15 +31,23 @@ class Server:
                         break
                     else:
                         fp.write(data)
-
-                solved_sudoku = self.ProcessImage(fname)
-                print('Processed image and received result: ' + solved_sudoku)
-                connection.send('msg: ' + solved_sudoku)
+                image = cv2.imread("imageToProcess.jpg")
+                result = self._process(image)
+                connection.send(pickle.dumps(result))
                 connection.close()
             finally:
                 print('Closed via server')
 
-                
-    def ProcessImage(self,imageName):
-        print('Procesuje sudoku: ' + imageName)
-        return 'Przeprocesowano'
+    def _process(self, image):
+        reader = SudokuOcr.OCRmodelClass()
+        read_grid = reader.orc(image).tolist()
+        solved_grid = self._solve_sudoku(read_grid)
+        return reader.original.tolist(), solved_grid
+
+    @staticmethod
+    def _solve_sudoku(read_grid):
+        solver = Solver(read_grid)
+        if solver.solve():
+            return solver.sudoku_grid
+        else:
+            return None
