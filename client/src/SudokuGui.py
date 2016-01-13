@@ -1,20 +1,9 @@
-import argparse
-
-from Tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM
+from Tkinter import Tk, Canvas, Frame, BOTH, TOP
 
 BOARDS = ['debug', 'n00b', 'l33t', 'error']  # Available sudoku boards
 MARGIN = 40  # Pixels around the board
 SIDE = 50  # Width of every board cell.
-WIDTH  = HEIGHT = MARGIN * 2 + SIDE * 9 # Width and height of the whole board
-
-
-class SudokuError(Exception):
-    """
-    An application specific error.
-    """
-    pass
-
-
+WIDTH = HEIGHT = MARGIN * 2 + SIDE * 9  # Width and height of the whole board
 
 
 class SudokuUI(Frame):
@@ -27,27 +16,20 @@ class SudokuUI(Frame):
         self.message = message
         self.row, self.col = -1, -1
 
-        self.__initUI()
+        self._init_ui()
 
-    def __initUI(self):
+    def _init_ui(self):
         self.parent.title("Sudoku")
         self.pack(fill=BOTH)
         self.canvas = Canvas(self,
                              width=WIDTH,
                              height=HEIGHT)
         self.canvas.pack(fill=BOTH, side=TOP)
+        self._draw_puzzle()
+        self._draw_grid()
+        self._draw_message()
 
-
-        try:
-            self.__draw_puzzle()
-            self.__draw_grid()
-
-        except:
-            pass
-        self.__draw_message()
-
-
-    def __draw_grid(self):
+    def _draw_grid(self):
         """
         Draws grid divided with blue lines into 3x3 squares
         """
@@ -66,7 +48,7 @@ class SudokuUI(Frame):
             y1 = MARGIN + i * SIDE
             self.canvas.create_line(x0, y0, x1, y1, fill=color)
 
-    def __draw_puzzle(self):
+    def _draw_puzzle(self):
         self.canvas.delete("numbers")
         for i in xrange(9):
             for j in xrange(9):
@@ -79,8 +61,7 @@ class SudokuUI(Frame):
                         x, y, text=answer, tags="numbers", fill="black"
                     )
 
-
-    def __draw_message(self):
+    def _draw_message(self):
 
         x = WIDTH /2
         y = 20
@@ -89,9 +70,6 @@ class SudokuUI(Frame):
             text=self.message, tags="victory",
             fill="black", font=("Arial", 16)
         )
-
-
-
 
 
 def run(grid, message):
