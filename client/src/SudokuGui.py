@@ -57,24 +57,12 @@ class SudokuUI(Frame):
     def __quitFunction(self):
         self.parent.destroy()
 
-    def __classicMode(self):
-        photoMode = Toplevel(self.parent)
-        photoMode.title("Photo mode")
-        canvas = Canvas(photoMode, width=600, height=600)
-        canvas.pack()
-        self.img = ImageTk.PhotoImage(Image.open("virtual.jpg"))
-        canvas.create_image(300,300, image=self.img)
-        
-
     def __setMenu(self):
         menubar = Menu(self.parent)
         fileMenu = Menu(menubar, tearoff=0)
         fileMenu.add_command(label="Exit", command=self.__quitFunction)
-        viewMenu = Menu(menubar, tearoff=0)
-        viewMenu.add_command(label="Photo mode", command=self.__classicMode)
 
         menubar.add_cascade(label = "File", menu=fileMenu)
-        menubar.add_cascade(label = "View", menu=viewMenu)
         self.parent.config(menu = menubar)
     
    
