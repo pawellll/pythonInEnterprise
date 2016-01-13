@@ -35,7 +35,7 @@ class Application:
                 # ############################################
                 solved_grid = self._solve_sudoku(read_grid)
                 if solved_grid is not None:
-                    SudokuGui.run(solved_grid, "Succesfully solved sudoku")
+                    SudokuGui.run(reader.original.tolist(), solvedGrid, "Succesfully solved sudoku")
                     break
 
     @staticmethod

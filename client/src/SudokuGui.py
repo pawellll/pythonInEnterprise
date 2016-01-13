@@ -1,69 +1,124 @@
-from Tkinter import Tk, Canvas, Frame, BOTH, TOP
+import argparse
 
-BOARDS = ['debug', 'n00b', 'l33t', 'error']  # Available sudoku boards
-MARGIN = 40  # Pixels around the board
-SIDE = 50  # Width of every board cell.
-WIDTH = HEIGHT = MARGIN * 2 + SIDE * 9  # Width and height of the whole board
+from Tkinter import *
+import Image, ImageTk
+
+
+
+class SudokuError(Exception):
+    """
+    An application specific error.
+    """
+    pass
+
 
 
 class SudokuUI(Frame):
 
-    def __init__(self, parent, grid, message):
-
+    def __init__(self, parent, readGrid, solvedGrid, message):
         Frame.__init__(self, parent)
         self.parent = parent
-        self.grid = grid
+        self.readGrid = readGrid
+        self.solvedGrid = solvedGrid
         self.message = message
         self.row, self.col = -1, -1
+        self.MARGIN = 60  # Pixels around the board
+        self.SIDE = 60  # Width of every board cell.
+        self.WIDTH  = self.HEIGHT = self.MARGIN * 2 + self.SIDE * 9
 
-        self._init_ui()
+        self.view = True
+        self.__initUI()
+	
+    def callback(self):
+        self.view = False
 
-    def _init_ui(self):
+    def __initUI(self):
+	
         self.parent.title("Sudoku")
+        self.__setMenu()
         self.pack(fill=BOTH)
         self.canvas = Canvas(self,
-                             width=WIDTH,
-                             height=HEIGHT)
+                             width=self.WIDTH,
+                             height=self.HEIGHT)
         self.canvas.pack(fill=BOTH, side=TOP)
-        self._draw_puzzle()
-        self._draw_grid()
-        self._draw_message()
+        
+        self.img = ImageTk.PhotoImage(Image.open("img/virtual.jpg"))
+        b = Button(self, text="Przelacz widok", command=self.callback)
+        b.pack()
+        try:
+            if self.view:
+                #self.canvas.create_image(350,350, image=self.img)
+                self.__draw_puzzle()
+                self.__draw_grid()
+        except:
+            pass
+        self.__draw_message()
 
-    def _draw_grid(self):
+    def __quitFunction(self):
+        self.parent.destroy()
+
+    def __classicMode(self):
+        photoMode = Toplevel(self.parent)
+        photoMode.title("Photo mode")
+        canvas = Canvas(photoMode, width=600, height=600)
+        canvas.pack()
+        self.img = ImageTk.PhotoImage(Image.open("img/virtual.jpg"))
+        canvas.create_image(300,300, image=self.img)
+        
+
+    def __setMenu(self):
+        menubar = Menu(self.parent)
+        fileMenu = Menu(menubar, tearoff=0)
+        fileMenu.add_command(label="Exit", command=self.__quitFunction)
+        viewMenu = Menu(menubar, tearoff=0)
+        viewMenu.add_command(label="Photo mode", command=self.__classicMode)
+
+        menubar.add_cascade(label = "File", menu=fileMenu)
+        menubar.add_cascade(label = "View", menu=viewMenu)
+        self.parent.config(menu = menubar)
+    
+   
+    def __draw_grid(self):
         """
         Draws grid divided with blue lines into 3x3 squares
         """
         for i in xrange(10):
             color = "blue" if i % 3 == 0 else "gray"
 
-            x0 = MARGIN + i * SIDE
-            y0 = MARGIN
-            x1 = MARGIN + i * SIDE
-            y1 = HEIGHT - MARGIN
+            x0 = self.MARGIN + i * self.SIDE
+            y0 = self.MARGIN
+            x1 = self.MARGIN + i * self.SIDE
+            y1 = self.HEIGHT - self.MARGIN
             self.canvas.create_line(x0, y0, x1, y1, fill=color)
 
-            x0 = MARGIN
-            y0 = MARGIN + i * SIDE
-            x1 = WIDTH - MARGIN
-            y1 = MARGIN + i * SIDE
+            x0 = self.MARGIN
+            y0 = self.MARGIN + i * self.SIDE
+            x1 = self.WIDTH - self.MARGIN
+            y1 = self.MARGIN + i * self.SIDE
             self.canvas.create_line(x0, y0, x1, y1, fill=color)
 
-    def _draw_puzzle(self):
+    def __draw_puzzle(self):
         self.canvas.delete("numbers")
+
         for i in xrange(9):
             for j in xrange(9):
-                answer = self.grid[i][j]
+		if (self.readGrid[i][j] == self.solvedGrid[i][j]):
+			textColor = 'green'
+		else:
+			textColor = 'red'
+                answer = self.solvedGrid[i][j]
                 if answer != 0:
-                    x = MARGIN + j * SIDE + SIDE / 2
-                    y = MARGIN + i * SIDE + SIDE / 2
+                    x = self.MARGIN + j * self.SIDE + self.SIDE / 2
+                    y = self.MARGIN + i * self.SIDE + self.SIDE / 2
 
                     self.canvas.create_text(
-                        x, y, text=answer, tags="numbers", fill="black"
+                        x, y, text=answer, tags="numbers", fill=textColor,
+			font=("Arial", 18)
                     )
 
-    def _draw_message(self):
 
-        x = WIDTH /2
+    def __draw_message(self):
+        x = self.WIDTH /2
         y = 20
         self.canvas.create_text(
             x, y,
@@ -72,8 +127,11 @@ class SudokuUI(Frame):
         )
 
 
-def run(grid, message):
+
+
+
+def run(readGrid, solvedGrid, message):
     root = Tk()
-    SudokuUI(root, grid, message)
-    root.geometry("%dx%d" % (WIDTH, HEIGHT))
+    sudokuUi = SudokuUI(root, readGrid, solvedGrid, message)
+    root.geometry("%dx%d" % (sudokuUi.WIDTH,sudokuUi.HEIGHT))
     root.mainloop()
