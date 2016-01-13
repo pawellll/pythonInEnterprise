@@ -42,7 +42,7 @@ class SudokuUI(Frame):
                              height=self.HEIGHT)
         self.canvas.pack(fill=BOTH, side=TOP)
         
-        self.img = ImageTk.PhotoImage(Image.open("img/virtual.jpg"))
+        self.img = ImageTk.PhotoImage(Image.open("virtual.jpg"))
         b = Button(self, text="Przelacz widok", command=self.callback)
         b.pack()
         try:
@@ -62,7 +62,7 @@ class SudokuUI(Frame):
         photoMode.title("Photo mode")
         canvas = Canvas(photoMode, width=600, height=600)
         canvas.pack()
-        self.img = ImageTk.PhotoImage(Image.open("img/virtual.jpg"))
+        self.img = ImageTk.PhotoImage(Image.open("virtual.jpg"))
         canvas.create_image(300,300, image=self.img)
         
 

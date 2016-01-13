@@ -27,17 +27,14 @@ class Application:
                 logging.info("Found sudoku on image")
                 # ############################################
                 # ################ TODO:send image with sudoku to server and wait for response
-                image_cls = ImageClass()
-                image_cls.output = image
                 reader = sudokuOcr.OCRmodelClass()
-                read_grid = reader.OCR(image_cls).tolist()
+                read_grid = reader.OCR(image).tolist()
                 # ################
                 # ############################################
                 solved_grid = self._solve_sudoku(read_grid)
                 if solved_grid is not None:
-                    # argumenty: tablica numpy, lista
-                    #image.virtualImage(reader.original, solvedGrid)
-                    SudokuGui.run(reader.original.tolist(), solvedGrid, "Succesfully solved sudoku")
+                    image.virtualImage(reader.original, solved_grid)
+                    SudokuGui.run(reader.original.tolist(), solved_grid, "Succesfully solved sudoku")
                     break
 
     @staticmethod

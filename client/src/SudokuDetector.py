@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+from ImageClass import ImageClass
 WINDOW_NAME = "picture_window"
 RED_COLOR = (0, 0, 255)
 DETECTION_LINE_THICKNESS = 3
@@ -29,6 +29,8 @@ class SudokuDetector:
         """
         cv2.namedWindow(WINDOW_NAME)  # create window for displaying image
         self._original_image = image
+        cv2.imwrite("original.jpg", self._original_image)
+
         self._preprocess()
 
         if self._find_biggest_square() is not None:
@@ -37,7 +39,10 @@ class SudokuDetector:
                 self._perspective()
                 self._warp()
                 self._i = 0
-                return self._output
+                image_cls = ImageClass()
+                image_cls.output = self._output
+                image_cls.maxArea = self.maxArea
+                return image_cls
             else:
                 self._i += 1
                 return None
